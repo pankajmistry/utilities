@@ -70,14 +70,14 @@ def processSinglePdf(input_fname, output_fname, args):
         startPage = args.spgn
 
     if startPage > lastPage:
-        print("1: for "+input_fname+" startPage = "+str(startPage)+" is greater then lastPage ="+str(lastPage))
+        print("for#1 "+input_fname+" startPage = "+str(startPage)+" is greater then lastPage ="+str(lastPage))
         return
 
     if args.epgn != -1:
         lastPage = args.epgn
 
     if startPage > lastPage:
-        print("2: for "+input_fname+" startPage = "+str(startPage)+" is greater then lastPage ="+str(lastPage))
+        print("for#2 "+input_fname+" startPage = "+str(startPage)+" is greater then lastPage ="+str(lastPage))
         return
     #pdb.set_trace()
     for page in range(startPage, lastPage+1):
@@ -86,6 +86,7 @@ def processSinglePdf(input_fname, output_fname, args):
     # finally, write "output" to document-output.pdf
     outputStream = open(output_fname, "wb")
     output.write(outputStream)
+    print("For: "+input_fname+" written to output:"+output_fname)
     return
 
 description = ("\n"
@@ -111,10 +112,9 @@ def verifyArgs(args):
         validcount += 1
     if args.ipdflist:
         validcount += 1
-    if validcount == 0:
+    if validcount == 0 and args.ipdfdir == "":
         print("Error: Can't process since no input provide, use one of -ip/-ipdflist")
         exit(-1)
-
 
     if validcount > 1:
         print("Error: Can't process since combinaton of -ip/-ipdflist/-iod is not valid")
@@ -147,7 +147,7 @@ def main():
         if opdf == "":
             opdf = "short_"+args.ipdf
         processSinglePdf(args.ipdf, opdf, args)
-    elif lem(args.ipdflist) != 0:
+    elif len(args.ipdflist) != 0:
         processListOfPdf(args)
     else:#args.ipdfdir != "":
         processDirOfPdf(args)
