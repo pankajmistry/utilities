@@ -36,11 +36,15 @@ import pdb
 '''
 def processDirOfPdf(args):
     files = os.listdir()
+    opdfdir = args.opdfdir
+    if args.opdfdir == "":
+        os.mkdir("result")
+        opdfdir = "result"
     for file in files:
         if file.endswith(".pdf"):
             input_fname = file
             output_fname = "short_"+file
-            processSinglePdf(input_fname, output_fname, args)
+            processSinglePdf(input_fname, opdfdir+"\\"+output_fname, args)
     return
 
 '''
@@ -99,6 +103,7 @@ def parseArguments():
     parser.add_argument("-ipdf", help="single input PDF file", type=str, default = "")
     parser.add_argument('-ipdflist', help="list of input pdf files separated by ','", type=str, default = "")
     parser.add_argument('-ipdfdir', help="input directory that contains set of pdf files[Default: Points to current director executable is in]", type=str, default = os.getcwd())
+    parser.add_argument('-opdfdir', help="ouput director, where all files will be stored", type=str, default = "")
     parser.add_argument('-spgn', help="start page number", type=int, default = -1)
     parser.add_argument('-epgn', help="end page number", type=int, default = -1)
     parser.add_argument('-opdf', help="ouput pdf file, if not set it will pick a name based on input file", type=str, default = "")
