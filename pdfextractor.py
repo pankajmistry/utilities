@@ -51,7 +51,8 @@ def processDirOfPdf(args):
     Implementation for handing list of files
 '''
 def processListOfPdf(args):
-    for file in args.ipdflist:
+    files = args.ipdflist.split(",")
+    for file in files:
         input_fname = file
         output_fname = "short_"+file
         processSinglePdf(input_fname, output_fname, args)
