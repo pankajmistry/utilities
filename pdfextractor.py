@@ -39,8 +39,12 @@ def processDirOfPdf(args):
     files = os.listdir()
     opdfdir = args.opdfdir
     if args.opdfdir == "":
-        os.mkdir("result")
+        if os.path.exists("result") == False:
+            os.mkdir("result")
         opdfdir = "result"
+    elif os.path.exists(opdfdir) == False:
+        os.mkdir(opdfdir)
+
     for file in files:
         if file.endswith(".pdf"):
             input_fname = file
