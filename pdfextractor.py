@@ -30,6 +30,7 @@ import argparse
 import os
 import sys
 import pdb
+import subprocess
 
 '''
     Implementation for handling all pdfs in a folder
@@ -61,13 +62,32 @@ def processListOfPdf(args):
 '''
     Implementation handling single file
 '''
-def processSinglePdf(input_fname, output_fname, args):
+def openInputPDFFile(input_fname):
+    isTemp = False
     try:
         origfile = PdfFileReader(open(input_fname, "rb"))
     except:
         print("Failed to parse "+input_fname)
-        return
+        return 0
+
+    if origfile.isEncrypted:
+        # TODO - D.A. - 2018-11-08 - manage password protected PDFs
+        try:
+            origfile.decrypt('')
+        except NotImplementedError:
+            # If not supported, try and use qpdf to decrypt with '' first.
+            # See https://github.com/mstamy2/PyPDF2/issues/378
+            # Workaround for the "NotImplementedError: only algorithm code 1 and 2 are supported" issue.
+            # check_executable_is_available('qpdf')
+            temp_fname = 'temp_'+input_fname
+            subprocess.check_call(['qpdf', '--decrypt', input_fname, temp_fname])
+            origfile = PdfFileReader(open(temp_fname, "rb"))
+            isTemp = True
+    return (origfile, isTemp)
+
+def processSinglePdf(input_fname, output_fname, args):
     #pdb.set_trace()
+    origfile, isTemp = openInputPDFFile(input_fname)
     startPage = 0
     lastPage = origfile.getNumPages()-1
     output = PdfFileWriter()
@@ -92,6 +112,9 @@ def processSinglePdf(input_fname, output_fname, args):
     outputStream = open(output_fname, "wb")
     output.write(outputStream)
     print("For: "+input_fname+" written to output:"+output_fname)
+    origfile.stream.close()
+    if isTemp == True and os.path.exists("temp_"+input_fname):
+        os.remove("temp_"+input_fname)
     return
 
 description = ("\n"
